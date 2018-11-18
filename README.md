@@ -59,4 +59,4 @@ console.log('Location of token: ' + TOKEN_PATH ) // Add this line
   
   2. Once you have the token saved as `youtube_token.json` in your project, you can use `npm start` to run the functions in `src/index.js`. 
   
-  **Important note:** Make sure not to commit your `client_secret.json` or `youtube_toke.json` to Github! In this project both files are listed in the `.gitignore`, so by default will not be added when you make a commit. However, if you rename either of these files, remember to update the `.gitignore` so that you don't commit them by mistake. They contain secrets, and should not be made public on Github. 
+ ⚠️**Important note:** Make sure not to upload your `client_secret.json` or `youtube_toke.json` to Github! In this project both files are listed in the `.gitignore`, so by default will not be added when you make a commit. However, if you rename either of these files, remember to update the `.gitignore` so that you don't commit them by mistake. They contain secrets, and should not be made public on Github.⚠️
