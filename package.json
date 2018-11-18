@@ -1,0 +1,35 @@
+{
+  "name": "apis-101",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node dist/index.js",
+    "precommit": "pkg-precommit",
+    "build": "pkg-build",
+    "prepublish": "npm run build",
+    "postpublish": "git push --tags",
+    "flow": "pkg-flow",
+    "lint": "pkg-lint",
+    "test": "NODE_ENV=test_local pkg-test",
+    "coverage": "NODE_ENV=test_local pkg-coverage",
+    "tidy": "pkg-tidy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-blair/apis-101.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alex-blair/apis-101/issues"
+  },
+  "homepage": "https://github.com/alex-blair/apis-101#readme",
+  "devDependencies": {
+    "@mishguru/package": "^5.1.0"
+  },
+  "dependencies": {
+    "google-auth-library": "^2.0.1",
+    "googleapis": "^35.0.0"
+  }
+}
