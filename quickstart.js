@@ -120,10 +120,12 @@ function getChannel (auth) {
         console.log('No channel found.')
       } else {
         console.log(
-          "This channel's ID is %s. Its title is '%s', and " +
+          "This channel's ID is %s. The title is '%s', " +
+            "the description says '%s' and " +
             'it has %s views.',
           channels[0].id,
           channels[0].snippet.title,
+          channels[0].snippet.description,
           channels[0].statistics.viewCount
         )
       }
