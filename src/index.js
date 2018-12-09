@@ -8,74 +8,55 @@ const clientSecret = credentials.installed.client_secret
 const clientId = credentials.installed.client_id
 const redirectUrl = credentials.installed.redirect_uris[0]
 
-// const DEFAULT_PARAMS = {
-//   maxResults: '2',
+// Cats in Kreuzberg
+// const CATS_IN_KREUZBERG = {
+//   maxResults: '10',
 //   part: 'snippet',
-//   q: 'baking',
-//   type: ''
+//   q: 'katze',
+//   type: 'video',
+//   location: '52.497402, 13.402770',
+//   locationRadius: '5km',
+//   publishedBefore: '2018-01-01T00:00:00Z'
 // }
 
-// const LOCATION_KEYWORD_PARAMS = {
-//   maxResults: '2',
+// Kreuzberg back in time
+// const KREUZBERG_BACK_IN_TIME = {
+//   maxResults: '10',
 //   part: 'snippet',
-//   q: 'baking',
 //   type: 'video',
-//   regionCode: 'NZ',
-//   location: '-43.528843, 172.633867',
-//   locationRadius: '100km'
-// }
-
-// const ORDER_LOCATION_KEYWORD_PARAMS = {
-//   maxResults: '49',
-//   part: 'snippet',
-//   q: 'cake',
-//   type: 'video',
-//   regionCode: 'NZ',
-//   order: 'viewCount',
-//   location: '-43.528843, 172.633867',
-//   locationRadius: '1000km',
-//   publishedAfter: '2018-01-01T00:00:00Z',
-//   videoDuration: 'short'
-// }
-
-// const PARKOUR_BERLIN_SEARCH = {
-//   maxResults: '49',
-//   part: 'snippet',
-//   q: 'Berlin',
-//   type: 'video',
-//   // order: 'viewCount',
 //   location: '52.497402, 13.402770',
 //   locationRadius: '5km',
 //   publishedBefore: '2008-01-01T00:00:00Z'
-//   // videoDuration: 'short',
 // }
 
-const CATS_BERLIN = {
-  maxResults: '49',
+// Lots of information with pages
+const TOUR_OF_BERLIN = {
+  maxResults: '50',
   part: 'snippet',
-  q: 'katze',
-  type: 'video',
-  // order: 'viewCount',
+  q: 'dog',
   location: '52.497402, 13.402770',
-  locationRadius: '5km',
-  publishedBefore: '2018-01-01T00:00:00Z'
-  // videoDuration: 'short',
+  locationRadius: '50km',
+  type: 'video',
+  order: 'viewCount'
 }
 
+const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl)
+oauth2Client.credentials = authToken
+
+// Starts the search
 const start = async () => {
-  var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl)
-  oauth2Client.credentials = authToken
-  // const result = await searchListByKeyword(oauth2Client, DEFAULT_PARAMS)
   // const result = await searchListByKeyword(
   //   oauth2Client,
-  //   LOCATION_KEYWORD_PARAMS
+  //   TOUR_OF_BERLIN
   // )
-  // const result = await searchListByKeyword(
-  //   oauth2Client,
-  //   ORDER_LOCATION_KEYWORD_PARAMS
-  // )
-  const result = await searchListByKeyword(oauth2Client, CATS_BERLIN)
+
+  const result = await searchListByKeyword(oauth2Client, TOUR_OF_BERLIN).then(
+    (result) => goToEndOfList(result, TOUR_OF_BERLIN)
+  )
+
   console.log(result.data.items)
+  // console.log("NEXT PAGE TOKEN: " + result.data.nextPageToken)
+  console.log('TOTAL RESULTS: ' + result.data.pageInfo.totalResults)
 }
 
 const searchListByKeyword = (auth, requestData) => {
@@ -88,6 +69,19 @@ const searchListByKeyword = (auth, requestData) => {
       resolve(response)
     })
   })
+}
+
+const goToEndOfList = async (result, searchParams) => {
+  if (result.data.nextPageToken) {
+    console.log('Next page')
+    await searchListByKeyword(oauth2Client, {
+      ...searchParams,
+      pageToken: result.data.nextPageToken
+    })
+      .then((result) => goToEndOfList(result, searchParams))
+      .catch((error) => console.log(error))
+  }
+  return result
 }
 
 start()
