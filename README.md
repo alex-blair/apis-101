@@ -47,7 +47,7 @@ Here are some steps to get the project running locally:
    
    ## Deeper Dive
 
-If you want to try out some of the other API requests in `src/index.js`, you'll need to do a bit more setup:
+If you want to try out some of the other API requests in `src`, you'll need to do a bit more setup:
  1. Find out where `youtube-nodejs-quickstart.json` has been saved locally and add a copy of it to your project file. Rename it `youtube_token.json` in your project.
     - *Tip:* You can see where `youtube-nodejs-quickstart.json` was saved by logging `TOKEN_PATH` 
   i.e. add the following line to `quickstart.js`:
@@ -57,6 +57,6 @@ console.log('Location of token: ' + TOKEN_PATH ) // Add this line
  ```
   Then run `node quickstart.js`. The location of the token should be printed in the console 😄
   
-  2. Once you have the token saved as `youtube_token.json` in your project, you can use `npm start` to run the functions in `src/index.js`. 
+  2. Once you have the token saved as `youtube_token.json` in your project, you can use it to run the functions in `search1.js`, `search2.js`, `search3.js`. 
   
  ⚠️**Important note:** Make sure not to upload your `client_secret.json` or `youtube_toke.json` to Github! In this project both files are listed in the `.gitignore`, so by default will not be added when you make a commit. However, if you rename either of these files, remember to update the `.gitignore` so that you don't commit them by mistake. They contain secrets, and should not be made public on Github.⚠️
