@@ -1,4 +1,5 @@
 import { google } from 'googleapis'
+import colors from 'colors/safe'
 
 import credentials from '../client_secret.json'
 
@@ -20,15 +21,6 @@ const KREUZBERG_BACK_IN_TIME = {
   publishedBefore: '2008-01-01T00:00:00Z'
 }
 
-// Kreuzberg back in time
-// const KREUZBERG_BACK_IN_TIME = {
-//   maxResults: '10',
-//   part: 'snippet',
-//   type: 'video',
-//   q: 'katze',
-//   publishedBefore: '2008-01-01T00:00:00Z'
-// }
-
 const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl)
 oauth2Client.credentials = authToken
 
@@ -37,7 +29,9 @@ const start = async () => {
   const result = await searchListByKeyword(oauth2Client, KREUZBERG_BACK_IN_TIME)
 
   console.log(result.data.items)
-  console.log('TOTAL RESULTS: ' + result.data.pageInfo.totalResults)
+  console.log(
+    colors.magenta('TOTAL RESULTS: ' + result.data.pageInfo.totalResults)
+  )
 }
 
 const searchListByKeyword = (auth, requestData) => {

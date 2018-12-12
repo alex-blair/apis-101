@@ -1,4 +1,5 @@
 import { google } from 'googleapis'
+import colors from 'colors/safe'
 
 import credentials from '../client_secret.json'
 
@@ -29,7 +30,9 @@ const start = async () => {
   const result = await searchListByKeyword(oauth2Client, CATS_IN_KREUZBERG)
 
   console.log(result.data.items)
-  console.log('TOTAL RESULTS: ' + result.data.pageInfo.totalResults)
+  console.log(
+    colors.magenta('TOTAL RESULTS: ' + result.data.pageInfo.totalResults)
+  )
 }
 
 const searchListByKeyword = (auth, requestData) => {

@@ -1,4 +1,5 @@
 import { google } from 'googleapis'
+import colors from 'colors/safe'
 
 import credentials from '../client_secret.json'
 
@@ -10,46 +11,64 @@ const clientSecret = credentials.installed.client_secret
 const clientId = credentials.installed.client_id
 const redirectUrl = credentials.installed.redirect_uris[0]
 
+const MAX_NUMBER_OF_ITEMS_TO_SHOW = 10
+
 // Lots of information with pages
-const HIDDEN_BERLIN_VIDEOS = {
+const DEFAULT_SEARCH_PARAMS = {
   maxResults: '50',
   part: 'snippet',
-  q: 'dance',
   location: '52.497402, 13.402770',
   locationRadius: '50km',
   type: 'video',
   order: 'viewCount'
 }
 
-// const HIDDEN_BERLIN_VIDEOS = {
-//   maxResults: '10',
-//   part: 'snippet',
-//   type: 'video',
-//   location: '52.497402, 13.402770',
-//   locationRadius: '5km',
-//   publishedBefore: '2008-01-01T00:00:00Z'
-// }
-
 const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl)
 oauth2Client.credentials = authToken
 
 // Starts the search
-const start = async () => {
-  // const result = await searchListByKeyword(
-  //   oauth2Client,
-  //   HIDDEN_BERLIN_VIDEOS
-  // )
+const start = async (searchTerm, verbose = false) => {
+  console.log(colors.green(`Searching for ${searchTerm} videos`))
+  const searchParams = {
+    ...DEFAULT_SEARCH_PARAMS,
+    q: searchTerm
+  }
 
-  const firstResult = await searchListByKeyword(
-    oauth2Client,
-    HIDDEN_BERLIN_VIDEOS
+  const firstResult = await searchListByKeyword(oauth2Client, searchParams)
+  const [allTheItems, lastResult] = await getItemsFromAllPages(
+    firstResult,
+    searchParams
   )
-  const lastResult = await goToEndOfList(firstResult, HIDDEN_BERLIN_VIDEOS)
-  console.log(lastResult.data.items)
-  console.log(lastResult.data)
-  console.log('TOTAL RESULTS: ' + lastResult.data.pageInfo.totalResults)
-  console.log('NEXT PAGE TOKEN: ' + lastResult.data.nextPageToken)
-  console.log('PREVIOUS PAGE TOKEN: ' + lastResult.data.prevPageToken)
+  const numberOfItemsToShow =
+    allTheItems.length > MAX_NUMBER_OF_ITEMS_TO_SHOW
+      ? MAX_NUMBER_OF_ITEMS_TO_SHOW
+      : allTheItems.length
+  const lastFewItems = allTheItems.slice(
+    allTheItems.length - numberOfItemsToShow
+  )
+
+  if (verbose) {
+    console.log(lastFewItems)
+  }
+  if (lastFewItems.length) {
+    console.log(
+      colors.magenta('TOTAL RESULTS: ' + lastResult.data.pageInfo.totalResults)
+    )
+  } else {
+    console.log(
+      colors.red(
+        `Youtube cannot return any of the ${
+          lastResult.data.pageInfo.totalResults
+        } items for this search query`
+      )
+    )
+  }
+  lastFewItems.map((i) => {
+    console.log(
+      colors.green(i.snippet.title),
+      colors.cyan.underline(`https://www.youtube.com/watch?v=${i.id.videoId}`)
+    )
+  })
 }
 
 const searchListByKeyword = (auth, requestData) => {
@@ -64,18 +83,25 @@ const searchListByKeyword = (auth, requestData) => {
   })
 }
 
-const goToEndOfList = async (result, searchParams) => {
+const getItemsFromAllPages = async (
+  result,
+  searchParams,
+  currentItems = result.data.items
+) => {
   if (result.data.nextPageToken) {
-    console.log('Next page')
-    console.log('Next page token: ' + result.data.nextPageToken)
+    console.log(colors.yellow('Going to the next page'))
     const nextPage = await searchListByKeyword(oauth2Client, {
       ...searchParams,
       pageToken: result.data.nextPageToken
     })
-    return goToEndOfList(nextPage, searchParams)
+    return getItemsFromAllPages(nextPage, searchParams, [
+      ...currentItems,
+      ...nextPage.data.items
+    ])
   }
-  console.log('Finished but still page token: ' + result.data.nextPageToken)
-  return result
+
+  return [currentItems, result]
 }
 
-start()
+var args = process.argv.slice(2)
+start(args[0], args[1])
