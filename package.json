@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "search1": "npm run build && node dist/search1.js",
+    "search2": "npm run build && node dist/search2.js",
+    "search3": "npm run build && node dist/search3.js",
     "precommit": "pkg-precommit",
     "build": "pkg-build",
     "prepublish": "npm run build",
